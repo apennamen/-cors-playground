@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CORS Playground</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <h1>Cross Origin Resource Sharing Playground</h1>
+  <p>Tips: Open your browser dev console (F12) to see CORS error in network tab.</p>
+
+  <div id="request-wrapper">
+    <button onclick="clearResults()" id="clear-result-btn">Clear Results</button>
+    <div id="request-results"></div>
+  </div>
+
+  <h2>GET Request</h2>
+  <button onclick="sendGetRequest()">Send GET Request</button>
+
+  <h2>GET Request with Cookies</h2>
+  <button onclick="sendGetRequestWithCookies()">Send GET Request with cookies</button>
+
+  <h2>GET Request with Basic Auth</h2>
+  <button onclick="sendGetRequestWithBasicAuth()">Send GET Request with Basic authentication</button>
+
+  <h2>GET Request with Custom Header</h2>
+  <button onclick="sendGetRequestWithCustomHeader()">Send GET Request with custom header</button>
+
+  <h2>PUT Request</h2>
+  <button onclick="sendPutRequest()">Send PUT request</button>
+
+  <h2>POST Request with "no-cors"</h2>
+  <p>Note: You can observe that the server responded correctly, but the content was not communicated to the JavaScript</p>
+  <button onclick="sendPostRequestNoCors()">Send POST request no cors</button>
+
+  <script>
+    const backendUrl = 'http://localhost:5000';
+    function sendGetRequest() {
+      fetch(backendUrl) // { credentials: 'same-origin' }
+        .then(response => response.text())
+        .then(data => {
+          print(data);
+        })
+        .catch(error => {
+          print(error);
+        });
+    }
+
+    function sendGetRequestWithCookies() {
+      fetch(backendUrl, { credentials: 'include' }) 
+        .then(response => response.text())
+        .then(data => {
+          print(data);
+        })
+        .catch(error => {
+          print(error);
+        });
+    }
+
+    function sendGetRequestWithBasicAuth() {
+      const headers = new Headers();
+      const username = 'aladdin';
+      const password = 'supers3cur3d';
+      headers.set('Authorization', 'Basic ' + btoa(`${username}:${password}`));
+      fetch(backendUrl, { headers })
+        .then(response => response.text())
+        .then(data => {
+          print(data);
+        })
+        .catch(error => {
+          print(error);
+        });
+    }
+
+    function sendGetRequestWithCustomHeader() {
+      fetch(backendUrl, {
+        method: 'GET',
+        headers: {
+          'X-Custom-Header': 'CustomHeaderValue'
+        }
+      })
+        .then(response => response.text())
+        .then(data => {
+          print(data);
+        })
+        .catch(error => {
+          print(error);
+        });
+    }
+
+    function sendPutRequest() {
+      fetch(backendUrl, { method: 'PUT' })
+        .then(response => response.text())
+        .then(data => {
+          print(data);
+        })
+        .catch(error => {
+          print(error);
+        });
+    }
+    function sendPostRequestNoCors() {
+      fetch(backendUrl, { method: 'POST', mode: 'no-cors' })
+        .then(response => response.text())
+        .then(data => {
+          print(data);
+        })
+        .catch(error => {
+          print(error);
+        });
+    }
+
+    function clearResults() {
+      const resultDiv = document.getElementById('request-results');
+      resultDiv.innerHTML = '';
+    }
+    function print(data) {
+      const now = new Date();
+      const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+      const timestamp = now.toLocaleTimeString();
+      const formattedTimestamp = `${timestamp}.${milliseconds}`;
+      const resultDiv = document.getElementById('request-results');
+      resultDiv.innerHTML = `[${formattedTimestamp}] ${data} <br/>` + resultDiv.innerHTML;
+    }
+  </script>
+</body>
+
+</html>
